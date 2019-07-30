@@ -1,13 +1,13 @@
 import glob
+import PIL
+from tensorflow.python.keras import layers
+
 import imageio
 
 from ilya_ezplot.plot.plot import plt
 import numpy as np
 import os
-import PIL
-from tensorflow.python.keras import layers
 import time
-
 import tensorflow as tf
 
 
@@ -17,7 +17,7 @@ train_images = train_images.reshape(train_images.shape[0], 28, 28, 1).astype('fl
 train_images = (train_images - 127.5) / 127.5 # Normalize the images to [-1, 1]
 
 BUFFER_SIZE = 60000
-BATCH_SIZE = 256
+BATCH_SIZE = 64
 
 # Batch and shuffle the data
 train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
@@ -25,16 +25,10 @@ train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_
 from generator import make_generator_model
 g = make_generator_model()
 
-noise = tf.random.normal([1, 100])
-generated_image = g(noise, training=False)
-
-imageio.imsave("naja.png", generated_image.numpy()[0])
-
 from discriminator import make_discriminator_model
 
 d = make_discriminator_model()
-decision = d(generated_image)
-print (decision)
+
 
 
 # This method returns a helper function to compute cross entropy loss
@@ -119,7 +113,7 @@ def generate_and_save_images(model, epoch, test_input):
         plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5, cmap='gray')
         plt.axis('off')
 
-    plt.savefig(f'image_at_epoch_{epoch:04d}.png')
+    plt.savefig(os.path.join("output", f'image_at_epoch_{epoch:04d}.png') )
 
 train(train_dataset, 5)
 
@@ -139,3 +133,10 @@ train(train_dataset, 5)
 #     writer.append_data(image)
 #   image = imageio.imread(filename)
 #   writer.append_data(image)
+
+# noise = tf.random.normal([1, 100])
+# generated_image = g(noise, training=False)
+#
+# imageio.imsave("naja.png", generated_image.numpy()[0])
+# decision = d(generated_image)
+# print (decision)
