@@ -21,8 +21,6 @@ n_gen, n_disc = 3, 3
 gs = [Generator() for _ in range(n_gen)]
 ds = [Discriminator() for _ in range(n_disc)]
 
-
-@tf.function
 def train_step(images, discr: Discriminator, gen: Generator):
     noise = tf.random.normal([BATCH_SIZE, noise_dim])
 
@@ -38,17 +36,21 @@ def train_step(images, discr: Discriminator, gen: Generator):
     discr.update(disc_tape, disc_loss)
     gen.update(gen_tape, gen_loss)
 
+train_foos = { (g, d) : tf.function(train_step) for g in gs for d in ds}
+import random
+
 def train(dataset, epochs):
     seed = tf.random.normal([num_examples_to_generate, noise_dim])
     for epoch in range(epochs):
         start = time.time()
+        generate_and_save_images(gs[0], epoch + 1, seed)
 
         for image_batch in dataset:
-            for g in gs:
-                for d in ds:
-                    train_step(image_batch, d, g)
+            d = random.choice(ds)
+            g = random.choice(gs)
+            train_foo = train_foos[(g, d)]
+            train_foo(image_batch, d, g)
 
-        generate_and_save_images(gs[0], epoch + 1, seed)
         print (f'Time for epoch {(epoch + 1)} is {(time.time() - start):.2f} sec')
 
     generate_and_save_images(gs[0], epochs, seed)
@@ -66,6 +68,7 @@ def generate_and_save_images(model:Generator, epoch:int, test_input):
         plt.axis('off')
 
     plt.savefig(os.path.join("output", f'image_at_epoch_{epoch:04d}.png') )
+    plt.close(fig)
 
 if __name__ == "__main__":
-    train(train_dataset, 5)
+    train(train_dataset, n_disc*n_gen*50)
