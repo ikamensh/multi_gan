@@ -16,8 +16,10 @@ train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_
 from generator import Generator
 from discriminator import Discriminator
 
-g = Generator()
-d = Discriminator()
+n_gen, n_disc = 3, 3
+
+gs = [Generator() for _ in range(n_gen)]
+ds = [Discriminator() for _ in range(n_disc)]
 
 
 @tf.function
@@ -42,12 +44,14 @@ def train(dataset, epochs):
         start = time.time()
 
         for image_batch in dataset:
-            train_step(image_batch, d, g)
+            for g in gs:
+                for d in ds:
+                    train_step(image_batch, d, g)
 
-        generate_and_save_images(g, epoch + 1, seed)
+        generate_and_save_images(gs[0], epoch + 1, seed)
         print (f'Time for epoch {(epoch + 1)} is {(time.time() - start):.2f} sec')
 
-    generate_and_save_images(g, epochs, seed)
+    generate_and_save_images(gs[0], epochs, seed)
 
 
 os.makedirs('output', exist_ok=True)
