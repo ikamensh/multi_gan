@@ -88,7 +88,8 @@ def train(dataset, epochs):
     for epoch in range(epochs):
         start = time.time()
 
-        for image_batch in dataset:
+        for i, image_batch in enumerate(dataset):
+            print(i*BATCH_SIZE, '/', BUFFER_SIZE)
             train_step(image_batch)
 
         generate_and_save_images(g, epoch + 1, seed)
