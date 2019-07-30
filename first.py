@@ -116,6 +116,8 @@ def generate_and_save_images(model, epoch, test_input):
 
     plt.savefig(os.path.join("output", f'image_at_epoch_{epoch:04d}.png') )
 
+
+os.makedirs('output', exist_ok=True)
 train(train_dataset, 5)
 
 # anim_file = 'dcgan.gif'
