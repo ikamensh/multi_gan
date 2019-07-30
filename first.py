@@ -54,7 +54,6 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  generator=g,
                                  discriminator=d)
 
-EPOCHS = 50
 noise_dim = 100
 num_examples_to_generate = 16
 
@@ -65,17 +64,17 @@ seed = tf.random.normal([num_examples_to_generate, noise_dim])
 # Notice the use of `tf.function`
 # This annotation causes the function to be "compiled".
 @tf.function
-def train_step(images):
+def train_step(images, discr, gen):
     noise = tf.random.normal([BATCH_SIZE, noise_dim])
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-      generated_images = g(noise, training=True)
+        generated_images = gen(noise, training=True)
 
-      real_output = d(images, training=True)
-      fake_output = d(generated_images, training=True)
+        real_output = discr(images, training=True)
+        fake_output = discr(generated_images, training=True)
 
-      gen_loss = generator_loss(fake_output)
-      disc_loss = discriminator_loss(real_output, fake_output)
+        gen_loss = generator_loss(fake_output)
+        disc_loss = discriminator_loss(real_output, fake_output)
 
     gradients_of_generator = gen_tape.gradient(gen_loss, g.trainable_variables)
     gradients_of_discriminator = disc_tape.gradient(disc_loss, d.trainable_variables)
@@ -88,9 +87,8 @@ def train(dataset, epochs):
     for epoch in range(epochs):
         start = time.time()
 
-        for i, image_batch in enumerate(dataset):
-            print(i*BATCH_SIZE, '/', BUFFER_SIZE)
-            train_step(image_batch)
+        for image_batch in dataset:
+            train_step(image_batch, d, g)
 
         generate_and_save_images(g, epoch + 1, seed)
 
