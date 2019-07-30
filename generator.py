@@ -1,7 +1,7 @@
 from tensorflow.python.keras import layers
 import tensorflow as tf
 
-def make_generator_model():
+def _make_generator_model():
     model = tf.keras.Sequential()
     model.add(layers.Dense(7*7*64, use_bias=False, input_shape=(100,)))
     model.add(layers.BatchNormalization())
@@ -27,3 +27,18 @@ def make_generator_model():
     assert model.output_shape == (None, 28, 28, 1)
 
     return model
+
+_cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+class Generator:
+    def __init__(self):
+        self.net = _make_generator_model()
+        self.optimizer = tf.keras.optimizers.Adam(1e-4)
+
+    @staticmethod
+    def loss(fake_output):
+        return _cross_entropy(tf.ones_like(fake_output), fake_output)
+
+    def update(self, tape: tf.GradientTape, loss):
+        grad = tape.gradient(loss, self.net.trainable_variables)
+        self.optimizer.apply_gradients(zip(grad, self.net.trainable_variables))
