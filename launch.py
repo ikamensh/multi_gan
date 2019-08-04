@@ -16,13 +16,13 @@ if __name__ == "__main__":
         d = Discriminator()
         try:
             print("Started training")
-            cycle = 5
+            cycle = 10
             for i in range(1000):
                 timestamp = f'step_{d.step}'
                 g.save(timestamp), d.save(timestamp)
                 g.save('latest'), d.save('latest')
 
-                g.sample(500, save_to=os.path.join(generated_dir, "output", timestamp))
+                g.sample(500, save_to=os.path.join(generated_dir, "output", f'{timestamp:08d}'))
                 train(train_dataset, cycle, g=g, d=d)
         except KeyboardInterrupt as e:
             print(e)

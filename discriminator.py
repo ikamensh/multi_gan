@@ -6,12 +6,13 @@ from config import generated_dir
 
 def _make_discriminator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Conv2D(32, (5, 5), strides=(2, 2), padding='same',
+    model.add(layers.Conv2D(128, (4, 4), padding='same'))
+    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same',
                                      input_shape=[32, 32, 3]))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
-
-    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.Conv2D(128, (4, 4), padding='same'))
+    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
     model.add(layers.LeakyReLU())
     model.add(layers.Dropout(0.3))
 
@@ -37,9 +38,7 @@ class Discriminator:
 
     @property
     def step(self):
-        s = int(self.optimizer.iterations)
-        print(s)
-        return s
+        return int(self.optimizer.iterations)
 
     def loss(self, real_output, fake_output):
         real_labels = tf.ones_like(real_output)
@@ -52,7 +51,8 @@ class Discriminator:
         self.fake_accuracy.update_state(fake_labels, fake_output)
         self.real_loss.update_state(real_loss)
         self.fake_loss.update_state(fake_loss)
-        self.log_metrics()
+        if not self.optimizer.iterations % 100:
+            self.log_metrics()
 
         total_loss = real_loss + fake_loss
         return total_loss
