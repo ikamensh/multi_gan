@@ -33,7 +33,7 @@ def _make_generator_model():
 _cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 class Generator:
-    check_dir = "checkpoints"
+    check_dir = os.path.join("checkpoints", "generator")
     def __init__(self):
         self.net = _make_generator_model()
         self.optimizer = tf.keras.optimizers.Adam(3e-4)
@@ -50,8 +50,10 @@ class Generator:
         noise = tf.random.normal([n, 100])
         generated_images = self.net(noise, training=False)
         if save_to:
+
             os.makedirs(save_to, exist_ok=True)
-            for i, img in enumerate(generated_images.numpy()):
+            normalized = (generated_images * 127.5 + 127.5).numpy().astype('uint8')
+            for i, img in enumerate(normalized):
                 imageio.imsave( os.path.join(save_to, f"{i+1}.jpg"), img)
 
         return generated_images
@@ -66,7 +68,7 @@ class Generator:
 
 if __name__ == "__main__":
     g = Generator()
-    g.load("the_best")
+    # g.load("the_best")
     g.sample(100, 'test_gen_1epoch')
 
 

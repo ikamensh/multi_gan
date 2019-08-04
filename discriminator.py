@@ -1,5 +1,6 @@
 from tensorflow.python.keras import layers
 import tensorflow as tf
+import os
 
 def _make_discriminator_model():
     model = tf.keras.Sequential()
@@ -21,6 +22,8 @@ _cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 
 class Discriminator:
+    check_dir = os.path.join("checkpoints", "discriminator")
+
     def __init__(self):
         self.net = _make_discriminator_model()
         self.optimizer = tf.keras.optimizers.Adam(3e-4)
@@ -35,3 +38,10 @@ class Discriminator:
     def update(self, tape: tf.GradientTape, loss):
         grad = tape.gradient(loss, self.net.trainable_variables)
         self.optimizer.apply_gradients(zip(grad, self.net.trainable_variables))
+
+    def save(self, label:str):
+        os.makedirs(self.check_dir, exist_ok=True)
+        self.net.save(os.path.join(self.check_dir, label + '.h5'))
+
+    def load(self, label:str):
+        self.net.load_weights(os.path.join(self.check_dir, label + '.h5'))

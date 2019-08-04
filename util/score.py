@@ -26,14 +26,14 @@ def inception_score(images: List[np.ndarray], splits=10):
     for img in images:
         img = img.astype(np.float32)
         inps.append(np.expand_dims(img, 0))
-    bs = 1
+    batch_size = 8
     with tf.Session() as sess:
         preds = []
-        n_batches = int(math.ceil(float(len(inps)) / float(bs)))
+        n_batches = int(math.ceil(float(len(inps)) / float(batch_size)))
         for i in range(n_batches):
             sys.stdout.write(".")
             sys.stdout.flush()
-            inp = inps[(i * bs):min((i + 1) * bs, len(inps))]
+            inp = inps[(i * batch_size):min((i + 1) * batch_size, len(inps))]
             inp = np.concatenate(inp, 0)
             pred = sess.run(_softmax, {'ExpandDims:0': inp})
             preds.append(pred)
