@@ -3,6 +3,9 @@ import tensorflow as tf
 import imageio
 import os
 
+from config import generated_dir
+
+
 def _make_generator_model():
     model = tf.keras.Sequential()
     model.add(layers.Dense(7*7*64, use_bias=False, input_shape=(100,)))
@@ -33,7 +36,7 @@ def _make_generator_model():
 _cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 class Generator:
-    check_dir = os.path.join("checkpoints", "generator")
+    check_dir = os.path.join(generated_dir, "checkpoints", "generator")
     def __init__(self):
         self.net = _make_generator_model()
         self.optimizer = tf.keras.optimizers.Adam(3e-4)
@@ -68,8 +71,8 @@ class Generator:
 
 if __name__ == "__main__":
     g = Generator()
-    # g.load("the_best")
-    g.sample(100, 'test_gen_1epoch')
+    g.load("latest")
+    g.sample(100, os.path.join(generated_dir, 'test_gen_1epoch'))
 
 
 
