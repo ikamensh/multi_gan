@@ -50,7 +50,7 @@ path = os.path.join(summary_dir, filename)
 ms = to_metrics(path)
 
 for tag, metric in ms.items():
-    ez_plot(metric, 'plots_sm2')
+    ez_plot(metric, os.path.join(generated_dir, 'plots'))
 
 
 # for filename in os.listdir(summary_dir):

@@ -18,11 +18,11 @@ if __name__ == "__main__":
             print("Started training")
             cycle = 10
             for i in range(1000):
-                timestamp = f'step_{d.step}'
+                timestamp = f'step_{d.step:08d}'
                 g.save(timestamp), d.save(timestamp)
                 g.save('latest'), d.save('latest')
 
-                g.sample(500, save_to=os.path.join(generated_dir, "output", f'{timestamp:08d}'))
+                g.sample(500, save_to=os.path.join(generated_dir, "output", timestamp))
                 train(train_dataset, cycle, g=g, d=d)
         except KeyboardInterrupt as e:
             print(e)

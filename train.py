@@ -44,6 +44,8 @@ def train(dataset, epochs, *, g: Generator, d: Discriminator):
         generate_and_save_images(g, seed, d.step)
         for image_batch in dataset:
             train_step(image_batch, d, g)
+            if not d.step % 100:
+                d.log_metrics()
 
         print(f'Time for epoch {_globals.global_epoch} is {(time.time() - start):.2f} sec')
         _globals.global_epoch += 1
