@@ -1,62 +1,30 @@
 import os
-
-
-# import tensorflow as tf
-#
-# summary_dir = 'tmp/summaries'
-# summary_writer = tf.summary.create_file_writer('tmp/summaries')
-#
-# with summary_writer.as_default():
-#   tf.summary.scalar('loss', 0.1, step=42)
-#   tf.summary.scalar('loss', 0.2, step=43)
-#   tf.summary.scalar('loss', 0.3, step=44)
-#   tf.summary.scalar('loss', 0.4, step=45)
-
-
-from tensorflow.core.util import event_pb2
-from tensorflow.python.lib.io import tf_record
-from tensorflow.python.framework import tensor_util
-
-def my_summary_iterator(path):
-    for r in tf_record.tf_record_iterator(path):
-        yield event_pb2.Event.FromString(r)
-
 from config import generated_dir
-summary_dir = os.path.join(generated_dir, 'summaries')
-from ilya_ezplot import Metric, ez_plot
+from tf_reader import records
+from ilya_ezplot import Metric, ez_plot, plot_group
+
 
 def to_metrics(path):
 
     metrics = {}
-    # ctr = 0
 
-    for event in my_summary_iterator(path):
-        for value in event.summary.value:
-
-            tag = value.tag
-            m: Metric = metrics.setdefault(tag, Metric('step', tag))
-            t = tensor_util.MakeNdarray(value.tensor)
-            m.add_record(event.step, float(t))
-
-        # ctr +=1
-        # if ctr > 300000:
-        #     break
+    for tag, step, value in records(path):
+        m: Metric = metrics.setdefault(tag, Metric('step', tag))
+        m.add_record(step, value)
 
     return metrics
 
 
+summary_dir = os.path.join(generated_dir, 'summaries')
 filename = os.listdir(summary_dir)[0]
 path = os.path.join(summary_dir, filename)
 ms = to_metrics(path)
 
-for tag, metric in ms.items():
-    ez_plot(metric, os.path.join(generated_dir, 'plots'))
+from discriminator import GanMetrics
 
+losses = (GanMetrics.real_loss, GanMetrics.fake_loss)
+accuracies = (GanMetrics.real_acc, GanMetrics.fake_acc)
 
-# for filename in os.listdir(summary_dir):
-#     path = os.path.join(summary_dir, filename)
-#     for event in my_summary_iterator(path):
-#         for value in event.summary.value:
-#             t = tensor_util.MakeNdarray(value.tensor)
-#             print(value.tag, event.step, t)
+plot_group({k:v for k,v in ms.items() if k in losses}, os.path.join(generated_dir, 'plots'), 'losses')
+plot_group({k:v for k,v in ms.items() if k in accuracies}, os.path.join(generated_dir, 'plots'), 'accuracies')
 

@@ -22,7 +22,7 @@ if __name__ == "__main__":
                 g.save(timestamp), d.save(timestamp)
                 g.save('latest'), d.save('latest')
 
-                g.sample(500, save_to=os.path.join(generated_dir, "output", timestamp))
+                g.sample(400, save_to=os.path.join(generated_dir, "output", timestamp))
                 train(train_dataset, cycle, g=g, d=d)
         except KeyboardInterrupt as e:
             print(e)

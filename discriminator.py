@@ -23,6 +23,11 @@ def _make_discriminator_model():
 
 _cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
+class GanMetrics:
+    real_loss = 'discr_real_loss'
+    fake_loss = 'discr_fake_loss'
+    real_acc = 'discr_real_acc'
+    fake_acc = 'discr_fake_acc'
 
 class Discriminator:
     check_dir = os.path.join(generated_dir,"checkpoints", "discriminator")
@@ -67,11 +72,11 @@ class Discriminator:
         self.net.load_weights(os.path.join(self.check_dir, label + '.h5'))
 
     def log_metrics(self):
-        tf.summary.scalar('discr_real_loss', self.real_loss.result(), self.optimizer.iterations)
-        tf.summary.scalar('discr_fake_loss', self.fake_loss.result(), self.optimizer.iterations)
+        tf.summary.scalar(GanMetrics.real_loss, self.real_loss.result(), self.optimizer.iterations)
+        tf.summary.scalar(GanMetrics.fake_loss, self.fake_loss.result(), self.optimizer.iterations)
 
-        tf.summary.scalar('discr_real_acc', self.real_accuracy.result(), self.optimizer.iterations)
-        tf.summary.scalar('discr_fake_acc', self.fake_accuracy.result(), self.optimizer.iterations)
+        tf.summary.scalar(GanMetrics.real_acc, self.real_accuracy.result(), self.optimizer.iterations)
+        tf.summary.scalar(GanMetrics.fake_acc, self.fake_accuracy.result(), self.optimizer.iterations)
 
         self.real_accuracy.reset_states()
         self.fake_accuracy.reset_states()
