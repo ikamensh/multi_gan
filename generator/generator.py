@@ -1,44 +1,16 @@
-from tensorflow.python.keras import layers
 import tensorflow as tf
 import imageio
 import os
 
 from config import generated_dir
-
-
-def _make_generator_model():
-    model = tf.keras.Sequential()
-    model.add(layers.Dense(7*7*128, use_bias=False, input_shape=(100,)))
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
-
-    model.add(layers.Reshape((7, 7, 128)))
-    assert model.output_shape == (None, 7, 7, 128) # Note: None is the batch size
-
-    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    assert model.output_shape == (None, 7, 7, 128)
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
-
-    model.add(layers.Conv2DTranspose(256, (1, 1), strides=(1, 1), padding='same', use_bias=False))
-    assert model.output_shape == (None, 7, 7, 256)
-
-    model.add(layers.Conv2DTranspose(64, (4, 4), strides=(2, 2), padding='valid', use_bias=False))
-    # assert model.output_shape == (None, 14, 14, 32)
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
-
-    model.add(layers.Conv2DTranspose(3, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
-    assert model.output_shape == (None, 32, 32, 3), model.output_shape
-
-    return model
+from generator.net import make_generator_model
 
 _cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
 class Generator:
     check_dir = os.path.join(generated_dir, "checkpoints", "generator")
     def __init__(self):
-        self.net = _make_generator_model()
+        self.net = make_generator_model()
         self.optimizer = tf.keras.optimizers.Adam(3e-4)
 
     @staticmethod

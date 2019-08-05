@@ -4,7 +4,8 @@ import tensorflow as tf
 
 from generator import Generator
 from discriminator import Discriminator
-from train import train, train_dataset
+from train import train
+from util.cifar import cifar_dataset
 from config import generated_dir
 
 if __name__ == "__main__":
@@ -23,7 +24,7 @@ if __name__ == "__main__":
                 g.save('latest'), d.save('latest')
 
                 g.sample(400, save_to=os.path.join(generated_dir, "output", timestamp))
-                train(train_dataset, cycle, g=g, d=d)
+                train(cifar_dataset, cycle, g=g, d=d)
         except KeyboardInterrupt as e:
             print(e)
         finally:

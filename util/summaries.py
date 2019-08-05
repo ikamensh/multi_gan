@@ -1,7 +1,7 @@
 import os
 from config import generated_dir
 from tf_reader import records
-from ilya_ezplot import Metric, ez_plot, plot_group
+from ilya_ezplot import Metric, plot_group
 
 
 def to_metrics(path):
@@ -20,7 +20,7 @@ filename = os.listdir(summary_dir)[0]
 path = os.path.join(summary_dir, filename)
 ms = to_metrics(path)
 
-from discriminator import GanMetrics
+from discriminator.discriminator import GanMetrics
 
 losses = (GanMetrics.real_loss, GanMetrics.fake_loss)
 accuracies = (GanMetrics.real_acc, GanMetrics.fake_acc)

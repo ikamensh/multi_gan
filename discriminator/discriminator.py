@@ -1,27 +1,8 @@
-from tensorflow.python.keras import layers
 import tensorflow as tf
 import os
 
 from config import generated_dir
-
-def _make_discriminator_model():
-    model = tf.keras.Sequential()
-    model.add(layers.Conv2D(64, (4, 4), padding='same'))
-    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same',
-                                     input_shape=[32, 32, 3]))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
-    model.add(layers.Conv2D(64, (4, 4), padding='same'))
-    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
-
-    model.add(layers.Flatten())
-    model.add(layers.Dense(1))
-
-    return model
-
-_cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+from discriminator.net import make_discriminator_model
 
 class GanMetrics:
     real_loss = 'discr_real_loss'
@@ -29,11 +10,12 @@ class GanMetrics:
     real_acc = 'discr_real_acc'
     fake_acc = 'discr_fake_acc'
 
+_cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 class Discriminator:
     check_dir = os.path.join(generated_dir,"checkpoints", "discriminator")
 
     def __init__(self):
-        self.net = _make_discriminator_model()
+        self.net = make_discriminator_model()
         self.optimizer = tf.keras.optimizers.Adam(3e-4)
 
         self.real_accuracy = tf.metrics.BinaryAccuracy()
