@@ -77,3 +77,5 @@ BATCH_SIZE = 64
 cifar_dataset = cifar_dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).prefetch(256)
 
 # plot_images(dataset, n_images=8, samples_per_image=10)
+unique_classes = set(e[0] for e in train_labels)
+

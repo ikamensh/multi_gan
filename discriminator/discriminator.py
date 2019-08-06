@@ -1,7 +1,7 @@
 import tensorflow as tf
 import os
 
-from config import generated_dir
+from config import generated_dir, n_classes
 from discriminator.net import make_discriminator_model
 from model import Model
 
@@ -17,7 +17,7 @@ class Discriminator(Model):
     check_dir = os.path.join(generated_dir, "checkpoints", "discriminator")
 
     def __init__(self):
-        self.net = make_discriminator_model()
+        self.net = make_discriminator_model(n_classes)
         self.optimizer = tf.keras.optimizers.Adam(3e-4)
 
         self.real_accuracy = tf.metrics.BinaryAccuracy()
