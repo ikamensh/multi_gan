@@ -7,7 +7,6 @@ from util.visualize import generate_and_save_images
 from generator import Generator, noise_dim
 from discriminator import Discriminator
 import _globals
-from config import generated_dir
 from util.cifar import BATCH_SIZE
 
 
@@ -33,16 +32,17 @@ def train(dataset, epochs, *, g: Generator, d: Discriminator):
     seed = tf.random.normal([num_examples_to_generate, noise_dim])
     for epoch in range(epochs):
         start = time.time()
-        generate_and_save_images(g, seed, d.step)
+        generate_and_save_images(g, seed, _globals.step)
         for image_batch in dataset:
             train_step(image_batch, d, g)
-            if not d.step % 100:
+            _globals.step += 1
+            if not _globals.step % 100:
                 d.log_metrics()
 
         print(f'Time for epoch {_globals.global_epoch} is {(time.time() - start):.2f} sec')
         _globals.global_epoch += 1
 
-    generate_and_save_images(g, seed, d.step)
+    generate_and_save_images(g, seed, _globals.step)
 
 
 

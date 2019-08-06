@@ -7,19 +7,22 @@ from discriminator import Discriminator
 from train import train
 from util.augment import cifar_dataset
 from config import generated_dir
+import _globals
 
 if __name__ == "__main__":
 
     summary_writer = tf.summary.create_file_writer(os.path.join(generated_dir, 'summaries'))
     with summary_writer.as_default():
 
-        g = Generator()
-        d = Discriminator()
+        gs = [Generator(), Generator()]
+        ds = [Discriminator(), Discriminator()]
+        g = gs[0]
+        d = ds[0]
         try:
             print("Started training")
             epochs_per_cycle = 10
             for i in range(1000):
-                timestamp = f'step_{d.step:08d}'
+                timestamp = f'step_{_globals.step:08d}'
                 g.save(timestamp), d.save(timestamp)
                 g.save('latest'), d.save('latest')
 
