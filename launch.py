@@ -5,7 +5,7 @@ import tensorflow as tf
 from generator import Generator
 from discriminator import Discriminator
 from train import train
-from util.cifar import cifar_dataset
+from util.augment import cifar_dataset
 from config import generated_dir
 
 if __name__ == "__main__":
@@ -17,14 +17,14 @@ if __name__ == "__main__":
         d = Discriminator()
         try:
             print("Started training")
-            cycle = 10
+            epochs_per_cycle = 10
             for i in range(1000):
                 timestamp = f'step_{d.step:08d}'
                 g.save(timestamp), d.save(timestamp)
                 g.save('latest'), d.save('latest')
 
                 g.sample(400, save_to=os.path.join(generated_dir, "output", timestamp))
-                train(cifar_dataset, cycle, g=g, d=d)
+                train(cifar_dataset, epochs_per_cycle, g=g, d=d)
         except KeyboardInterrupt as e:
             print(e)
         finally:
