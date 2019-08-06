@@ -7,6 +7,7 @@ from discriminator import Discriminator
 from train import train
 from util.augment import cifar_dataset
 from config import generated_dir
+import _globals
 
 if __name__ == "__main__":
 
@@ -19,7 +20,7 @@ if __name__ == "__main__":
             print("Started training")
             epochs_per_cycle = 10
             for i in range(1000):
-                timestamp = f'step_{d.step:08d}'
+                timestamp = f'step_{_globals.step:08d}'
                 g.save(timestamp), d.save(timestamp)
                 g.save('latest'), d.save('latest')
 
