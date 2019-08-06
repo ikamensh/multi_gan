@@ -10,7 +10,7 @@ from util.cifar import BATCH_SIZE
 from config import n_classes, latent_dim
 
 
-# @tf.function
+@tf.function
 def train_step(images, labels, discr: Discriminator, gen: Generator):
 
     noise = tf.random.normal([BATCH_SIZE, latent_dim])
