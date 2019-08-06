@@ -25,6 +25,6 @@ from discriminator.discriminator import GanMetrics
 losses = (GanMetrics.real_loss, GanMetrics.fake_loss)
 accuracies = (GanMetrics.real_acc, GanMetrics.fake_acc)
 
-plot_group({k:v for k,v in ms.items() if k in losses}, os.path.join(generated_dir, 'plots'), 'losses')
-plot_group({k:v for k,v in ms.items() if k in accuracies}, os.path.join(generated_dir, 'plots'), 'accuracies')
+plot_group({k:v for k,v in ms.items() if any(l in k for l in losses)}, os.path.join(generated_dir, 'plots'), 'losses')
+plot_group({k:v for k,v in ms.items() if any(l in k for l in accuracies)}, os.path.join(generated_dir, 'plots'), 'accuracies')
 

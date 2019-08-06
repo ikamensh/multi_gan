@@ -10,8 +10,9 @@ import _globals
 from util.cifar import BATCH_SIZE
 
 
-@tf.function
-def train_step(images, discr: Discriminator, gen: Generator):
+
+
+def _train_step(images, discr: Discriminator, gen: Generator):
     noise = tf.random.normal([BATCH_SIZE, noise_dim])
 
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
@@ -25,6 +26,13 @@ def train_step(images, discr: Discriminator, gen: Generator):
 
     discr.update(disc_tape, disc_loss)
     gen.update(gen_tape, gen_loss)
+
+from collections import defaultdict
+_train_functions = defaultdict(lambda :tf.function(_train_step))
+
+def train_step(images, discr: Discriminator, gen: Generator):
+    train_function = _train_functions[(discr, gen)]
+    train_function(images, discr, gen)
 
 
 num_examples_to_generate = 16

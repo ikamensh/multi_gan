@@ -42,11 +42,11 @@ class Discriminator(Model):
         return total_loss
 
     def log_metrics(self):
-        tf.summary.scalar(GanMetrics.real_loss, self.real_loss.result(), self.optimizer.iterations)
-        tf.summary.scalar(GanMetrics.fake_loss, self.fake_loss.result(), self.optimizer.iterations)
+        tf.summary.scalar(f'{GanMetrics.real_loss}_{self.id}', self.real_loss.result(), self.optimizer.iterations)
+        tf.summary.scalar(f'{GanMetrics.fake_loss}_{self.id}', self.fake_loss.result(), self.optimizer.iterations)
 
-        tf.summary.scalar(GanMetrics.real_acc, self.real_accuracy.result(), self.optimizer.iterations)
-        tf.summary.scalar(GanMetrics.fake_acc, self.fake_accuracy.result(), self.optimizer.iterations)
+        tf.summary.scalar(f'{GanMetrics.real_acc}_{self.id}', self.real_accuracy.result(), self.optimizer.iterations)
+        tf.summary.scalar(f'{GanMetrics.fake_acc}_{self.id}', self.fake_accuracy.result(), self.optimizer.iterations)
 
         self.real_accuracy.reset_states()
         self.fake_accuracy.reset_states()
