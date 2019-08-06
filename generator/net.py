@@ -42,23 +42,3 @@ def make_generator_model(noise_dim, num_classes, color_ch=3):
     assert generator.output_shape == (None, 32, 32, color_ch), generator.output_shape
 
     return generator
-
-if __name__ == "__main__":
-
-    g = make_generator_model(100, 10)
-
-    in1 = tf.random.normal(shape=[2,100])
-    cls = tf.ones(shape=[2,1])
-    out1 = g([in1, cls])
-    print(out1.shape)
-
-    in1 = tf.random.normal(shape=[4,100])
-    cls = tf.ones(shape=[4,1]) * 0
-    out1 = g([in1, cls])
-    print(out1.shape)
-
-
-    in1 = tf.random.normal(shape=[4,100])
-    cls = tf.ones(shape=[4,1]) * 7
-    out1 = g([in1, cls])
-    print(out1.shape)

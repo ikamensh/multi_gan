@@ -14,9 +14,8 @@ if TYPE_CHECKING:
 dir_samples = os.path.join(generated_dir, "samples_human")
 os.makedirs(dir_samples, exist_ok=True)
 
-
 def generate_and_save_images(model: Generator, test_input, timestamp):
-    predictions = model.net(test_input, training=False)
+    predictions = model.sample(seed=test_input)
 
     fig = plt.figure(figsize=(4, 4))
 

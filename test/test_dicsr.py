@@ -12,7 +12,7 @@ def test_can_build():
 def test_net():
     d = make_discriminator_model(n_classes)
 
-    fake_img = np.ones([10,32,32,3], dtype=np.float64)
+    fake_img = np.ones([10,32,32,3], dtype=np.float32)
 
     is_fake, classes = d(fake_img)
 

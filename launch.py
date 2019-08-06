@@ -5,7 +5,7 @@ import tensorflow as tf
 from generator import Generator
 from discriminator import Discriminator
 from train import train
-from util.augment import cifar_dataset
+from util.cifar import cifar_dataset
 from config import generated_dir
 import _globals
 
@@ -24,7 +24,7 @@ if __name__ == "__main__":
                 g.save(timestamp), d.save(timestamp)
                 g.save('latest'), d.save('latest')
 
-                g.sample(400, save_to=os.path.join(generated_dir, "output", timestamp))
+                g.sample(n=400, save_to=os.path.join(generated_dir, "output", timestamp))
                 train(cifar_dataset, epochs_per_cycle, g=g, d=d)
         except KeyboardInterrupt as e:
             print(e)

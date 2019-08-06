@@ -11,7 +11,9 @@ class GanMetrics:
     real_acc = 'discr_real_acc'
     fake_acc = 'discr_fake_acc'
 
-_cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+bin_cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
 
 class Discriminator(Model):
     check_dir = os.path.join(generated_dir, "checkpoints", "discriminator")
@@ -26,19 +28,21 @@ class Discriminator(Model):
         self.fake_loss = tf.metrics.Mean()
         super().__init__()
 
-    def loss(self, real_output, fake_output):
+    def loss(self, real_output, fake_output, class_pred, labels):
         real_labels = tf.ones_like(real_output)
         fake_labels = tf.zeros_like(fake_output)
 
-        real_loss = _cross_entropy(real_labels, real_output)
-        fake_loss = _cross_entropy(fake_labels, fake_output)
+        real_loss = bin_cross_entropy(real_labels, real_output)
+        fake_loss = bin_cross_entropy(fake_labels, fake_output)
+
+        class_loss = cross_entropy(labels, class_pred)
 
         self.real_accuracy.update_state(real_labels, real_output)
         self.fake_accuracy.update_state(fake_labels, fake_output)
         self.real_loss.update_state(real_loss)
         self.fake_loss.update_state(fake_loss)
 
-        total_loss = real_loss + fake_loss
+        total_loss = real_loss + fake_loss + class_loss
         return total_loss
 
     def log_metrics(self):

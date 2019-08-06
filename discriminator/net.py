@@ -16,7 +16,7 @@ def make_discriminator_model(num_classes, color_ch = 3):
     cnn.add(layers.Dense(32))
     cnn.add(layers.LeakyReLU())
 
-    image = layers.Input(shape=(32, 32, color_ch), dtype=tf.float64)
+    image = layers.Input(shape=(32, 32, color_ch))
     features = cnn(image)
 
     fake = layers.Dense(1, activation='sigmoid', name='generation')(features)
