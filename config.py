@@ -11,6 +11,7 @@ else:
 
 
 generated_dir = os.path.join(root, "acgan", timestr)
+print(f'Using {generated_dir}')
 
 latent_dim = 100
 colors = 3

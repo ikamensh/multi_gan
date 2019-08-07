@@ -11,6 +11,9 @@ import config
 def test_generator_net():
     make_generator_model(100, 10)
 
+def test_generator_save():
+    g = Generator()
+    g.save('einfach_so')
 
 def test_outputs_f32():
     g = Generator()

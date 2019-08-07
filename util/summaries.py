@@ -22,9 +22,13 @@ ms = to_metrics(path)
 
 from discriminator.discriminator import GanMetrics
 
-losses = (GanMetrics.real_loss, GanMetrics.fake_loss)
+losses = (GanMetrics.real_loss, GanMetrics.fake_loss, GanMetrics.aux_loss)
 accuracies = (GanMetrics.real_acc, GanMetrics.fake_acc)
 
-plot_group({k:v for k,v in ms.items() if k in losses}, os.path.join(generated_dir, 'plots'), 'losses')
-plot_group({k:v for k,v in ms.items() if k in accuracies}, os.path.join(generated_dir, 'plots'), 'accuracies')
+def main():
+    plot_group({k:v for k,v in ms.items() if k in losses}, os.path.join(generated_dir, 'plots'), 'losses')
+    plot_group({k:v for k,v in ms.items() if k in accuracies}, os.path.join(generated_dir, 'plots'), 'accuracies')
+
+if __name__ == '__main__':
+    main()
 

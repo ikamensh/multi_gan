@@ -6,6 +6,7 @@ from generator import Generator
 from discriminator import Discriminator
 from train import train
 from util.cifar import cifar_dataset
+from util import summaries
 from config import generated_dir
 import _globals
 
@@ -26,6 +27,7 @@ if __name__ == "__main__":
 
                 g.sample(n=400, save_to=os.path.join(generated_dir, "output", timestamp))
                 train(cifar_dataset, epochs_per_cycle, g=g, d=d)
+                summaries.main()
         except KeyboardInterrupt as e:
             print(e)
         finally:
