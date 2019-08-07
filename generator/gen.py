@@ -16,18 +16,18 @@ cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 class Generator(Model):
     check_dir = os.path.join(generated_dir, "checkpoints", "generator")
 
-    def __init__(self):
+    def __init__(self, size_factor):
         self.net = make_generator_model(latent_dim,
                                         num_classes=n_classes,
-                                        color_ch=colors)
-        self.optimizer = tf.keras.optimizers.Adam(3e-4)
-
+                                        color_ch=colors,
+                                        size_factor = size_factor)
+        self.optimizer = tf.keras.optimizers.Adam(1e-4)
         super().__init__()
 
     @staticmethod
     def loss(fake_output, class_preds, class_labels):
         return bin_cross_entropy(tf.ones_like(fake_output), fake_output) + \
-               cross_entropy(class_labels, class_preds)
+               cross_entropy(class_labels, class_preds) / 3
 
     def forward(self, seed: tf.Tensor, cls: tf.Tensor, training: bool):
         generated_images = self.net([seed, cls], training)

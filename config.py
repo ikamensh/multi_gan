@@ -15,6 +15,7 @@ print(f'Using {generated_dir}')
 
 latent_dim = 100
 colors = 3
+size_factor = 2
 
 
 # from util.augment import unique_classes
