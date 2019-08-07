@@ -22,9 +22,10 @@ cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 class Discriminator(Model):
     check_dir = os.path.join(generated_dir, "checkpoints", "discriminator")
 
-    def __init__(self):
-        self.net = make_discriminator_model(n_classes)
-        self.optimizer = tf.keras.optimizers.Adam(3e-4)
+    def __init__(self, size_factor):
+        self.net = make_discriminator_model(n_classes, size_factor=size_factor)
+        self.lr = tf.Variable(3e-5)
+        self.optimizer = tf.keras.optimizers.Adam(self.lr)
 
         self.real_accuracy = tf.metrics.BinaryAccuracy()
         self.fake_accuracy = tf.metrics.BinaryAccuracy()
@@ -49,7 +50,7 @@ class Discriminator(Model):
         self.fake_loss.update_state(fake_loss)
         self.aux_loss.update_state(class_loss)
 
-        total_loss = real_loss + fake_loss + class_loss
+        total_loss = 2 * real_loss + fake_loss + class_loss
         return total_loss
 
     def log_metrics(self):
@@ -57,9 +58,18 @@ class Discriminator(Model):
         tf.summary.scalar(GanMetrics.fake_loss, self.fake_loss.result(), _globals.step)
 
         tf.summary.scalar(GanMetrics.real_acc, self.real_accuracy.result(), _globals.step)
-        tf.summary.scalar(GanMetrics.fake_acc, self.fake_accuracy.result(), _globals.step)
 
+        fake_acc = self.fake_accuracy.result()
+        if fake_acc > 0.8:
+            self.lr.assign(1e-6)
+        elif fake_acc < 0.2:
+            self.lr.assign(2e-4)
+        else:
+            self.lr.assign(3e-5)
+
+        tf.summary.scalar(GanMetrics.fake_acc, self.fake_accuracy.result(), _globals.step)
         tf.summary.scalar(GanMetrics.aux_loss, self.aux_loss.result(), _globals.step)
+        tf.summary.scalar('discr learning rate', self.lr.value(), _globals.step)
 
         self.real_accuracy.reset_states()
         self.fake_accuracy.reset_states()
