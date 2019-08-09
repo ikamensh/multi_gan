@@ -15,7 +15,7 @@ def to_metrics(path):
     return metrics
 
 
-summary_dir = os.path.join(generated_dir, 'summaries')
+summary_dir = '../'+ os.path.join(generated_dir, 'summaries')
 filename = os.listdir(summary_dir)[0]
 path = os.path.join(summary_dir, filename)
 ms = to_metrics(path)

@@ -7,6 +7,8 @@ from config import generated_dir, colors, latent_dim, n_classes
 from model import Model
 from util.visualize import save_images
 
+from util.diff_aug import crop_resize_batch, color
+
 bin_cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
@@ -19,6 +21,7 @@ class Generator(Model):
                                         num_classes=n_classes,
                                         color_ch=colors)
         self.optimizer = tf.keras.optimizers.Adam(3e-4)
+
         super().__init__()
 
     @staticmethod
@@ -26,10 +29,10 @@ class Generator(Model):
         return bin_cross_entropy(tf.ones_like(fake_output), fake_output) + \
                cross_entropy(class_labels, class_preds)
 
-
     def forward(self, seed: tf.Tensor, cls: tf.Tensor, training: bool):
         generated_images = self.net([seed, cls], training)
-        return generated_images
+        return color(crop_resize_batch(generated_images))
+
 
 
     def sample(self,
@@ -64,7 +67,6 @@ class Generator(Model):
             save_images(images, save_to)
 
         return images
-
 
 
 if __name__ == "__main__":
