@@ -31,6 +31,8 @@ def make_generator_model(noise_dim, num_classes, color_ch=3, size_factor = 4):
 
     cnn.add(layers.Conv2DTranspose(64 * size_factor, (1, 1), strides=(1, 1), padding='same', use_bias=False))
     assert cnn.output_shape == (None, 7, 7, 64 * size_factor), cnn.output_shape
+    cnn.add(layers.BatchNormalization())
+    cnn.add(layers.LeakyReLU())
 
     cnn.add(layers.Conv2DTranspose(16 * size_factor, (4, 4), strides=(2, 2), padding='valid', use_bias=False))
     assert cnn.output_shape == (None, 16, 16, 16 * size_factor), cnn.output_shape
