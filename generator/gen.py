@@ -31,7 +31,8 @@ class Generator(Model):
 
     def forward(self, seed: tf.Tensor, cls: tf.Tensor, training: bool):
         generated_images = self.net([seed, cls], training)
-        return crop_resize_batch(generated_images)
+        return generated_images
+        # return crop_resize_batch(generated_images)
 
 
 
