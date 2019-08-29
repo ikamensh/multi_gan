@@ -24,7 +24,7 @@ class Discriminator(Model):
 
     def __init__(self, size_factor):
         self.net = make_discriminator_model(n_classes, size_factor=size_factor)
-        self.lr = tf.Variable(3e-5)
+        self.lr = tf.Variable(1e-4)
         self.optimizer = tf.keras.optimizers.Adam(self.lr)
 
         self.real_accuracy = tf.metrics.BinaryAccuracy()
@@ -59,13 +59,13 @@ class Discriminator(Model):
 
         tf.summary.scalar(GanMetrics.real_acc, self.real_accuracy.result(), _globals.step)
 
-        fake_acc = self.fake_accuracy.result()
-        if fake_acc > 0.8:
-            self.lr.assign(1e-6)
-        elif fake_acc < 0.2:
+        adv_loss = self.real_loss.result() + self.fake_loss.result()
+        if adv_loss > 1.4:
             self.lr.assign(2e-4)
+        elif adv_loss < 0.6:
+            self.lr.assign(3e-6)
         else:
-            self.lr.assign(3e-5)
+            self.lr.assign(6e-5)
 
         tf.summary.scalar(GanMetrics.fake_acc, self.fake_accuracy.result(), _globals.step)
         tf.summary.scalar(GanMetrics.aux_loss, self.aux_loss.result(), _globals.step)

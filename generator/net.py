@@ -3,41 +3,41 @@ import tensorflow as tf
 
 def make_generator_model(noise_dim, num_classes, color_ch=3, size_factor = 4):
     cnn = tf.keras.Sequential()
-    cnn.add(layers.Dense(7*7*64 * size_factor, input_shape=(noise_dim,)))
+    cnn.add(layers.Dense(7*7*32 * size_factor, input_shape=(noise_dim,), use_bias=False))
     cnn.add(layers.BatchNormalization())
     cnn.add(layers.LeakyReLU())
 
-    cnn.add(layers.Dense(7*7*32 * size_factor, input_shape=(noise_dim,)))
-    cnn.add(layers.BatchNormalization())
-    cnn.add(layers.LeakyReLU())
+    # cnn.add(layers.Dense(7*7*32 * size_factor, input_shape=(noise_dim,)))
+    # cnn.add(layers.BatchNormalization())
+    # cnn.add(layers.LeakyReLU())
 
     cnn.add(layers.Reshape((7, 7, 32 * size_factor)))
     assert cnn.output_shape == (None, 7, 7, 32 * size_factor), cnn.output_shape
 
-    cnn.add(layers.Conv2DTranspose(32 * size_factor, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    # cnn.add(layers.Conv2DTranspose(32 * size_factor, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    # assert cnn.output_shape == (None, 7, 7, 32 * size_factor), cnn.output_shape
+    # cnn.add(layers.BatchNormalization())
+    # cnn.add(layers.LeakyReLU())
+    #
+    # cnn.add(layers.Conv2DTranspose(64 * size_factor, (1, 1), strides=(1, 1), padding='same', use_bias=False))
+    # assert cnn.output_shape == (None, 7, 7, 64 * size_factor), cnn.output_shape
+    # cnn.add(layers.BatchNormalization())
+    # cnn.add(layers.LeakyReLU())
+
+    cnn.add(layers.Conv2DTranspose(32* size_factor, (5, 5), strides=(1, 1), padding='same', use_bias=False, kernel_initializer='glorot_normal'))
     assert cnn.output_shape == (None, 7, 7, 32 * size_factor), cnn.output_shape
     cnn.add(layers.BatchNormalization())
     cnn.add(layers.LeakyReLU())
 
-    cnn.add(layers.Conv2DTranspose(64 * size_factor, (1, 1), strides=(1, 1), padding='same', use_bias=False))
-    assert cnn.output_shape == (None, 7, 7, 64 * size_factor), cnn.output_shape
-    cnn.add(layers.BatchNormalization())
-    cnn.add(layers.LeakyReLU())
-
-    cnn.add(layers.Conv2DTranspose(32* size_factor, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    assert cnn.output_shape == (None, 7, 7, 32 * size_factor), cnn.output_shape
-    cnn.add(layers.BatchNormalization())
-    cnn.add(layers.LeakyReLU())
-
-    cnn.add(layers.Conv2DTranspose(64 * size_factor, (1, 1), strides=(1, 1), padding='same', use_bias=False))
+    cnn.add(layers.Conv2DTranspose(64 * size_factor, (5, 5), strides=(1, 1), padding='same', use_bias=False, kernel_initializer='glorot_normal'))
     assert cnn.output_shape == (None, 7, 7, 64 * size_factor), cnn.output_shape
 
-    cnn.add(layers.Conv2DTranspose(16 * size_factor, (4, 4), strides=(2, 2), padding='valid', use_bias=False))
+    cnn.add(layers.Conv2DTranspose(16 * size_factor, (4, 4), strides=(2, 2), padding='valid', use_bias=False, kernel_initializer='glorot_normal'))
     assert cnn.output_shape == (None, 16, 16, 16 * size_factor), cnn.output_shape
     cnn.add(layers.BatchNormalization())
     cnn.add(layers.LeakyReLU())
 
-    cnn.add(layers.Conv2DTranspose(64 * size_factor, (1, 1), strides=(1, 1), padding='same', use_bias=False))
+    cnn.add(layers.Conv2DTranspose(64 * size_factor, (4, 4), strides=(1, 1), padding='same', use_bias=False, kernel_initializer='glorot_normal'))
     assert cnn.output_shape == (None, 16, 16, 64 * size_factor), cnn.output_shape
     cnn.add(layers.BatchNormalization())
     cnn.add(layers.LeakyReLU())

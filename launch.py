@@ -17,7 +17,7 @@ if __name__ == "__main__":
     with summary_writer.as_default():
 
         g = Generator(size_factor)
-        d = Discriminator(size_factor)
+        d = Discriminator(2 * size_factor)
         try:
             print("Started training")
             epochs_per_cycle = 5

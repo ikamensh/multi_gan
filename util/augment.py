@@ -65,16 +65,19 @@ augmentations = [flip, color, zoom, rotate]
 (train_images, train_labels), (_, _) = tf.keras.datasets.cifar10.load_data()
 train_images = train_images.reshape(train_images.shape[0], 32, 32, 3).astype('float32')
 train_images = (train_images - 127.5) / 127.5  # Normalize the images to [-1, 1]
-cifar_dataset = tf.data.Dataset.from_tensor_slices(train_images)
+image_dataset = tf.data.Dataset.from_tensor_slices(train_images)
+label_dataset = tf.data.Dataset.from_tensor_slices(train_labels)
+
 
 for f in augmentations:
-    cifar_dataset = cifar_dataset.map(lambda x: tf.cond(tf.random.uniform([], 0, 1) > 0.75, lambda: f(x), lambda: x), num_parallel_calls=4)
-# dataset = dataset.map(lambda x: tf.clip_by_value(x, 0, 1))
+    image_dataset = image_dataset.map(lambda x: tf.cond(tf.random.uniform([], 0, 1) > 0.75, lambda: f(x), lambda: x), num_parallel_calls=4)
 
 BUFFER_SIZE = 60000
 BATCH_SIZE = 64
 
-cifar_dataset = cifar_dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE).prefetch(256)
+cifar_dataset = tf.data.Dataset.zip((image_dataset, label_dataset)).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
+# cifar_dataset = tf.data.Dataset.zip((image_dataset, label_dataset)).shuffle(BUFFER_SIZE).batch(BATCH_SIZE).prefetch(256)
+
 
 # plot_images(dataset, n_images=8, samples_per_image=10)
 unique_classes = set(e[0] for e in train_labels)

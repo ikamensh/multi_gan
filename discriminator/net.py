@@ -24,7 +24,9 @@ def make_discriminator_model(num_classes, color_ch = 3, size_factor = 4):
 
     cnn.add(layers.Flatten())
     cnn.add(layers.Dense(32 * size_factor))
+    cnn.add(layers.BatchNormalization())
     cnn.add(layers.LeakyReLU())
+
 
     image = layers.Input(shape=(32, 32, color_ch))
     features = cnn(image)

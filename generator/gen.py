@@ -7,7 +7,7 @@ from config import generated_dir, colors, latent_dim, n_classes
 from model import Model
 from util.visualize import save_images
 
-from util.diff_aug import crop_resize_batch, color
+# from util.diff_aug import crop_resize_batch, crop_same
 
 bin_cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
@@ -21,17 +21,26 @@ class Generator(Model):
                                         num_classes=n_classes,
                                         color_ch=colors,
                                         size_factor = size_factor)
-        self.optimizer = tf.keras.optimizers.Adam(1e-4)
+        self.optimizer = tf.keras.optimizers.Adam(2e-4)
         super().__init__()
 
     @staticmethod
-    def loss(fake_output, class_preds, class_labels):
+    def loss(generated_images: tf.Tensor, fake_output, class_preds, class_labels):
+
+        batch_size = generated_images.shape[0]
+        img1 = tf.random.uniform(minval=0, maxval=batch_size-1, dtype=tf.int32)
+        img2 = tf.random.uniform(minval=0, maxval=batch_size-1, dtype=tf.int32)
+
+        diff = img1 - img2
+
+
+
         return bin_cross_entropy(tf.ones_like(fake_output), fake_output) + \
                cross_entropy(class_labels, class_preds) / 3
 
     def forward(self, seed: tf.Tensor, cls: tf.Tensor, training: bool):
         generated_images = self.net([seed, cls], training)
-        return color(crop_resize_batch(generated_images))
+        return crop_resize_batch(generated_images)
 
 
 
@@ -67,9 +76,3 @@ class Generator(Model):
             save_images(images, save_to)
 
         return images
-
-
-if __name__ == "__main__":
-    g = Generator()
-    # g.load("latest")
-    g.sample(cls=0, n=100, save_to=os.path.join(generated_dir, 'test_gen_1epoch'))

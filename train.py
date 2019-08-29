@@ -23,7 +23,7 @@ def train_step(images, labels, discr: Discriminator, gen: Generator):
         real_output, real_classes = discr.net(images, training=True)
         fake_output, fake_classes = discr.net(generated_images, training=True)
 
-        gen_loss = gen.loss(fake_output, class_preds=fake_classes, class_labels=class_target)
+        gen_loss = gen.loss(generated_images, fake_output, class_preds=fake_classes, class_labels=class_target)
         disc_loss = discr.loss(real_output, fake_output, real_classes, labels)
 
     discr.update(disc_tape, disc_loss)
